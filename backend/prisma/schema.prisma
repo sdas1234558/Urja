@@ -1,0 +1,48 @@
+// Prisma schema for EcoDistrict Backend
+// Supports PostgreSQL with pgvector extension for AI similarity search
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  password_hash String
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  projects Project[]
+
+  @@map("users")
+}
+
+model Project {
+  id                  Int     @id @default(autoincrement())
+  userId              Int     @map("user_id")
+  name                String
+  description         String?
+  facilityType        String? @map("facility_type")
+  infrastructureStatus String? @map("infrastructure_status")
+  roofSpace           Float? @map("roof_space")
+  solarAllocation     Float? @map("solar_allocation")
+  windTurbines        Int? @map("wind_turbines")
+  totalCapex          Float? @map("total_capex")
+  annualSavings       Float? @map("annual_savings")
+  paybackYears        Float? @map("payback_years")
+  co2Offset           Float? @map("co2_offset")
+  chartData           Json? @map("chart_data")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("projects")
+}
